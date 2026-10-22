@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BXB Security Score</title>
+<title>PILA Suite — your security score</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -50,8 +50,8 @@
 <header>
   <div style="display:flex;align-items:center;gap:11px;margin-right:auto">
     <div class="logo">X</div>
-    <div class="gk" style="font-weight:700;font-size:16px">ByTE <span class="dim">X</span> Bit <span class="muted" style="font-weight:500">· Security Score</span></div>
-    <span class="pill" style="color:var(--muted);background:var(--line);border:1px solid var(--line2)">FREE · HOST</span>
+    <div class="gk" style="font-weight:700;font-size:16px">PILA Suite <span class="muted" style="font-weight:500">· by ByTE X Bit</span></div>
+    <span class="pill" style="color:var(--muted);background:var(--line);border:1px solid var(--line2)">COMMUNITY · HOST</span>
   </div>
   <span class="muted" style="font:500 12px/1 system-ui" id="hostline">scanning…</span>
   <button class="btn" style="padding:9px 15px;font-size:12px">Upgrade</button>
@@ -84,9 +84,9 @@
       <div class="gk" id="score100" style="font-weight:600;font-size:13px;color:#c7d0dc;margin-top:4px">— / 100</div>
     </div>
     <div style="flex:999 1 380px;min-width:0">
-      <div class="muted" id="scopeline" style="font:600 13px/1 system-ui;margin-bottom:10px">This machine · local telemetry</div>
+      <div class="muted" id="scopeline" style="font:600 13px/1 system-ui;margin-bottom:10px">This machine · detection coverage</div>
       <h1 id="verdict" style="margin:0 0 12px;font:600 24px/1.3 'Space Grotesk';max-width:540px">Scanning this machine…</h1>
-      <p class="muted" style="margin:0 0 18px;font:400 14px/1.6 system-ui;max-width:540px">One honest grade for the computer you're on. No SIEM, no setup — it reads what your machine already logs, safely emulates a few attacks, and tells you what to fix.</p>
+      <p class="muted" style="margin:0 0 18px;font:400 14px/1.6 system-ui;max-width:540px">Your security score for the computer you're on. No SIEM, no setup — it checks which attacker techniques your machine could actually detect, and shows you the blind spots to fix.</p>
       <div style="display:flex;flex-wrap:wrap;gap:11px">
         <button class="btn" id="rescan">Scan this machine</button>
         <button class="btn ghost" id="download">Download report card</button>
@@ -96,8 +96,8 @@
 
   <!-- SCAN -->
   <section class="card" id="scan">
-    <div class="row"><span class="kicker" style="color:var(--blue)">1 · SCAN</span><span class="gk" style="font-weight:600;font-size:15px">What it reads on this machine</span></div>
-    <p class="muted" style="margin:0 0 14px;font:400 13px/1.6 system-ui">No SIEM required — it uses the logs your own computer already keeps.</p>
+    <div class="row"><span class="kicker" style="color:var(--blue)">1 · SCAN</span><span class="gk" style="font-weight:600;font-size:15px">Detection telemetry on this machine</span></div>
+    <p class="muted" style="margin:0 0 14px;font:400 13px/1.6 system-ui">Read-only and local — it checks which logging and detection sources you have. Nothing is sent anywhere.</p>
     <div id="sources" style="display:flex;flex-wrap:wrap;gap:8px"></div>
   </section>
 
@@ -116,23 +116,23 @@
 
   <!-- PROVE -->
   <section class="card" style="border-color:#223042;background:linear-gradient(180deg,#120e1d 0%,var(--panel) 60%)">
-    <div class="row"><span class="kicker" style="color:var(--purple)">4 · PROVE</span><span class="gk" style="font-weight:600;font-size:15px">We attacked this machine to check</span></div>
+    <div class="row"><span class="kicker" style="color:var(--purple)">4 · COVERAGE</span><span class="gk" style="font-weight:600;font-size:15px">Would your defenses catch it?</span></div>
     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:20px;padding:15px 17px;border:1px solid var(--line2);border-radius:11px;background:var(--panel2)">
       <div><div class="gk" id="provebig" style="font-weight:700;font-size:24px;color:var(--purple)">—</div><div class="muted" id="provesub" style="font:500 12px/1 system-ui;margin-top:5px">—</div></div>
       <div style="width:1px;align-self:stretch;background:var(--line2)"></div>
-      <div class="muted" style="font:400 12px/1.5 system-ui;max-width:280px">The missed techniques become the ranked fixes above.</div>
+      <div class="muted" style="font:400 12px/1.5 system-ui;max-width:280px">Each technique you can't see becomes a ranked fix above. <span class="dim">Professional proves each one by safely running the attack (live emulation).</span></div>
     </div>
   </section>
 
   <!-- UPGRADE -->
   <section class="upgrade">
     <div class="gk" style="font-weight:700;font-size:18px;margin-bottom:6px">This is one machine. You have a network.</div>
-    <p class="muted" style="margin:0 0 18px;font:400 13px/1.6 system-ui;max-width:640px">Free scores the computer you're on. Professional scores every device, plugs into your SIEM, and keeps watching so the grade stays honest over time.</p>
+    <p class="muted" style="margin:0 0 18px;font:400 13px/1.6 system-ui;max-width:640px">Community scores the computer you're on. Professional runs the real emulation, scores every device, plugs into your SIEM, and keeps watching so the grade stays honest over time.</p>
     <div class="lockgrid">
       <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Scan every device</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">One grade across your whole network.</div></div></div>
       <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Plug in your SIEM</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Suricata, Wazuh, Elastic, Splunk.</div></div></div>
       <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Track your score over time</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Continuous scoring and regression alerts.</div></div></div>
-      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Response + compliance report</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Containment readiness and a CIS / Essential Eight report.</div></div></div>
+      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Live attack emulation</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Safely runs the techniques to prove detection fires.</div></div></div>
     </div>
     <div style="margin-top:18px;display:flex;flex-wrap:wrap;align-items:center;gap:14px">
       <button class="btn">See Professional</button>
@@ -155,7 +155,7 @@ function render(d){
   $('ring').style.borderColor = d.grade_color;
   $('score100').textContent = d.score + ' / 100';
   $('verdict').textContent = d.verdict;
-  $('scopeline').textContent = 'This machine · ' + (d.meta ? d.meta.edition : 'Community') + ' · local telemetry';
+  $('scopeline').textContent = 'This machine · ' + (d.meta ? d.meta.edition : 'Community') + ' · detection coverage';
   $('hostline').textContent = d.host_label + ' · scanned just now';
 
   // sources (from categories? we show the prove + a derived list) — use categories’ visibility via /api
@@ -194,13 +194,13 @@ function render(d){
   });
 
   // prove
-  $('provebig').textContent = d.prove.detected + ' of ' + d.prove.total + ' detected';
-  $('provesub').textContent = d.prove.total + ' attacker techniques safely emulated on this machine';
+  $('provebig').textContent = d.prove.detected + ' of ' + d.prove.total + ' covered';
+  $('provesub').textContent = d.prove.total + ' common ATT&CK techniques checked';
 }
 
 function defaultSources(d){
   // The /api/score payload doesn't ship raw sources; show a sensible host set.
-  return ['Local system logs','Host firewall','OS security events'];
+  return ['Endpoint detection','Event logging','Audit policy'];
 }
 
 async function scan(){
