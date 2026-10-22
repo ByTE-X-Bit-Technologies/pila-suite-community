@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Backups / snapshots - never publish
+*.bak
+*.bak-*
+*.bak2
+*.zip
+
+# Runtime data (local only)
+**/data/*.json
+*.log
+
+# Local config / secrets
+demo.conf
+*.env
+.env
+
+# OS
+.DS_Store
+Thumbs.db

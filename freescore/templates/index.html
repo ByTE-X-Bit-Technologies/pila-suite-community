@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BXB Security Score</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#0e131d; --panel2:#11161f; --line:#1b2230; --line2:#2a3344;
+    --ink:#e6edf6; --muted:#8b97a9; --dim:#6b7688;
+    --amber:#f59e0b; --blue:#4ea1ff; --green:#34d399; --purple:#a78bfa; --red:#f87171;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1000px 520px at 15% -8%, #15110a 0%, #0b0e14 58%);
+       color:var(--ink);font-family:system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,.gk{font-family:"Space Grotesk",system-ui,sans-serif}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+  header{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;padding:16px 28px;
+         border-bottom:1px solid var(--line);background:rgba(11,14,20,.6)}
+  .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--amber),#f97316);
+        display:flex;align-items:center;justify-content:center;font:700 14px/1 "Space Grotesk";color:#0b0e14}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  .pill{padding:3px 9px;border-radius:999px;font:700 10px/1 system-ui;letter-spacing:.08em}
+  .btn{border:0;border-radius:10px;padding:12px 20px;font:600 14px/1 "Space Grotesk";color:#0b0e14;background:var(--amber)}
+  .btn.ghost{border:1px solid var(--line2);color:#c7d0dc;background:var(--panel2)}
+  .ring{display:flex;flex-direction:column;align-items:center;justify-content:center;width:200px;height:200px;border-radius:50%}
+  .seg{display:flex;padding:4px;gap:4px;border:1px solid var(--line2);border-radius:999px;background:var(--panel2)}
+  .seg button{border:0;border-radius:999px;padding:9px 16px;font:600 13px/1 "Space Grotesk"}
+  .seg .on{color:#0b0e14;background:var(--green)}
+  .seg .locked{display:inline-flex;align-items:center;gap:7px;color:#5a6679;background:transparent;cursor:not-allowed}
+  .card{border:1px solid var(--line);border-radius:15px;background:var(--panel);padding:20px 22px;margin-bottom:16px}
+  .kicker{font:700 12px/1 "Space Grotesk";letter-spacing:.02em}
+  .row{display:flex;align-items:baseline;gap:9px;margin-bottom:6px}
+  .bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+  .barfill{height:100%;border-radius:999px}
+  .chip{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:999px;border:1px solid var(--line2);background:var(--panel2);font:500 12px/1 system-ui;color:#c7d0dc}
+  .dot{width:7px;height:7px;border-radius:999px}
+  .fix{display:flex;align-items:flex-start;gap:13px;padding:14px 15px;border:1px solid #223042;border-radius:11px;background:var(--panel2);margin-bottom:10px}
+  .impact{flex:none;min-width:46px;text-align:center;padding:6px 7px;border-radius:8px;background:rgba(52,211,153,.12);font:700 13px/1 "Space Grotesk";color:var(--green)}
+  .muted{color:var(--muted)} .dim{color:var(--dim)}
+  .upgrade{border:1px solid var(--line2);border-radius:16px;background:linear-gradient(180deg,rgba(245,158,11,.07),var(--panel) 70%);padding:24px}
+  .lockgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .lockitem{display:flex;align-items:center;gap:11px;padding:13px 15px;border:1px dashed #3a455a;border-radius:11px;background:var(--panel);opacity:.8}
+  @media(max-width:620px){.lockgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:11px;margin-right:auto">
+    <div class="logo">X</div>
+    <div class="gk" style="font-weight:700;font-size:16px">ByTE <span class="dim">X</span> Bit <span class="muted" style="font-weight:500">· Security Score</span></div>
+    <span class="pill" style="color:var(--muted);background:var(--line);border:1px solid var(--line2)">FREE · HOST</span>
+  </div>
+  <span class="muted" style="font:500 12px/1 system-ui" id="hostline">scanning…</span>
+  <button class="btn" style="padding:9px 15px;font-size:12px">Upgrade</button>
+</header>
+
+<div class="wrap">
+
+  <!-- Locked scope toggle -->
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:13px;padding:22px 0 0">
+    <span class="muted" style="font:600 12px/1 system-ui;letter-spacing:.04em">SCOPE</span>
+    <div class="seg" role="group" aria-label="Scope (Network and Fleet require an upgrade)">
+      <button class="on gk" aria-pressed="true">Host</button>
+      <button class="locked" disabled aria-disabled="true" aria-label="Network — requires Professional" title="Unlock with Professional">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5a6679" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Network <span class="pill" style="color:var(--amber);background:rgba(245,158,11,.13)">PRO</span>
+      </button>
+      <button class="locked" disabled aria-disabled="true" aria-label="Fleet — requires Enterprise" title="Unlock with Enterprise">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5a6679" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Fleet <span class="pill" style="color:var(--purple);background:rgba(167,139,250,.14)">ENT</span>
+      </button>
+    </div>
+    <span class="dim" style="font:500 12px/1.4 system-ui">You're on Host. Network &amp; Fleet unlock with an upgrade.</span>
+  </div>
+
+  <!-- HERO -->
+  <section style="display:flex;flex-wrap:wrap;align-items:center;gap:30px;padding:30px 0 24px">
+    <div class="ring" id="ring" style="border:2px solid var(--green)">
+      <div class="gk" id="grade" style="font-weight:700;font-size:72px;color:var(--green)">–</div>
+      <div class="muted" style="font:600 12px/1 system-ui;letter-spacing:.12em;margin-top:6px">SECURITY SCORE</div>
+      <div class="gk" id="score100" style="font-weight:600;font-size:13px;color:#c7d0dc;margin-top:4px">— / 100</div>
+    </div>
+    <div style="flex:999 1 380px;min-width:0">
+      <div class="muted" id="scopeline" style="font:600 13px/1 system-ui;margin-bottom:10px">This machine · local telemetry</div>
+      <h1 id="verdict" style="margin:0 0 12px;font:600 24px/1.3 'Space Grotesk';max-width:540px">Scanning this machine…</h1>
+      <p class="muted" style="margin:0 0 18px;font:400 14px/1.6 system-ui;max-width:540px">One honest grade for the computer you're on. No SIEM, no setup — it reads what your machine already logs, safely emulates a few attacks, and tells you what to fix.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:11px">
+        <button class="btn" id="rescan">Scan this machine</button>
+        <button class="btn ghost" id="download">Download report card</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCAN -->
+  <section class="card" id="scan">
+    <div class="row"><span class="kicker" style="color:var(--blue)">1 · SCAN</span><span class="gk" style="font-weight:600;font-size:15px">What it reads on this machine</span></div>
+    <p class="muted" style="margin:0 0 14px;font:400 13px/1.6 system-ui">No SIEM required — it uses the logs your own computer already keeps.</p>
+    <div id="sources" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  </section>
+
+  <!-- SCORE -->
+  <section class="card">
+    <div class="row" style="margin-bottom:14px"><span class="kicker" style="color:var(--amber)">2 · SCORE</span><span class="gk" style="font-weight:600;font-size:15px">What drives the grade</span></div>
+    <div id="cats" style="display:flex;flex-direction:column;gap:13px"></div>
+  </section>
+
+  <!-- FIX -->
+  <section class="card">
+    <div class="row"><span class="kicker" style="color:var(--green)">3 · FIX</span><span class="gk" style="font-weight:600;font-size:15px">Your highest-impact fixes</span></div>
+    <p class="muted" style="margin:0 0 16px;font:400 13px/1.6 system-ui">Plain language, ranked by how much they raise your grade.</p>
+    <div id="fixes"></div>
+  </section>
+
+  <!-- PROVE -->
+  <section class="card" style="border-color:#223042;background:linear-gradient(180deg,#120e1d 0%,var(--panel) 60%)">
+    <div class="row"><span class="kicker" style="color:var(--purple)">4 · PROVE</span><span class="gk" style="font-weight:600;font-size:15px">We attacked this machine to check</span></div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:20px;padding:15px 17px;border:1px solid var(--line2);border-radius:11px;background:var(--panel2)">
+      <div><div class="gk" id="provebig" style="font-weight:700;font-size:24px;color:var(--purple)">—</div><div class="muted" id="provesub" style="font:500 12px/1 system-ui;margin-top:5px">—</div></div>
+      <div style="width:1px;align-self:stretch;background:var(--line2)"></div>
+      <div class="muted" style="font:400 12px/1.5 system-ui;max-width:280px">The missed techniques become the ranked fixes above.</div>
+    </div>
+  </section>
+
+  <!-- UPGRADE -->
+  <section class="upgrade">
+    <div class="gk" style="font-weight:700;font-size:18px;margin-bottom:6px">This is one machine. You have a network.</div>
+    <p class="muted" style="margin:0 0 18px;font:400 13px/1.6 system-ui;max-width:640px">Free scores the computer you're on. Professional scores every device, plugs into your SIEM, and keeps watching so the grade stays honest over time.</p>
+    <div class="lockgrid">
+      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Scan every device</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">One grade across your whole network.</div></div></div>
+      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Plug in your SIEM</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Suricata, Wazuh, Elastic, Splunk.</div></div></div>
+      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Track your score over time</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Continuous scoring and regression alerts.</div></div></div>
+      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Response + compliance report</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Containment readiness and a CIS / Essential Eight report.</div></div></div>
+    </div>
+    <div style="margin-top:18px;display:flex;flex-wrap:wrap;align-items:center;gap:14px">
+      <button class="btn">See Professional</button>
+      <span class="muted" style="font:500 13px/1 system-ui">Network &amp; Fleet are a license key away.</span>
+    </div>
+  </section>
+
+  <div style="height:40px"></div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+function catColor(v){ return v>=70?'var(--green)':v>=50?'var(--amber)':'var(--red)'; }
+
+function render(d){
+  // ring
+  $('grade').textContent = d.grade;
+  $('grade').style.color = d.grade_color;
+  $('ring').style.borderColor = d.grade_color;
+  $('score100').textContent = d.score + ' / 100';
+  $('verdict').textContent = d.verdict;
+  $('scopeline').textContent = 'This machine · ' + (d.meta ? d.meta.edition : 'Community') + ' · local telemetry';
+  $('hostline').textContent = d.host_label + ' · scanned just now';
+
+  // sources (from categories? we show the prove + a derived list) — use categories’ visibility via /api
+  // sources come back implicitly via the collector; show present ones we know from prove context:
+  const srcWrap = $('sources'); srcWrap.innerHTML='';
+  (d.sources || d._sources || defaultSources(d)).forEach(s=>{
+    const el=document.createElement('span'); el.className='chip';
+    el.innerHTML='<span class="dot" style="background:var(--green)"></span>'+s;
+    srcWrap.appendChild(el);
+  });
+
+  // categories
+  const cats = $('cats'); cats.innerHTML='';
+  d.categories.forEach(c=>{
+    const wrap=document.createElement('div');
+    const findings = (c.findings||[]).join('  ·  ');
+    wrap.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'+
+        '<span style="font:500 13px/1 system-ui;color:#c7d0dc">'+c.label+'</span>'+
+        '<span class="gk" style="font-weight:700;font-size:13px;color:'+catColor(c.value)+'">'+c.value+'</span>'+
+      '</div>'+
+      '<div class="bar"><div class="barfill" style="width:'+c.value+'%;background:'+catColor(c.value)+'"></div></div>'+
+      (c.method?'<div style="font:400 12px/1.5 system-ui;color:var(--muted);margin-top:6px">'+c.method+'</div>':'')+
+      (findings?'<div style="font:400 11px/1.5 system-ui;color:var(--dim);margin-top:2px">'+findings+'</div>':'');
+    cats.appendChild(wrap);
+  });
+
+  // fixes
+  const fx = $('fixes'); fx.innerHTML='';
+  d.fixes.forEach(f=>{
+    const el=document.createElement('div'); el.className='fix';
+    el.innerHTML='<span class="impact">'+f.impact+'</span>'+
+      '<div><div class="gk" style="font-weight:600;font-size:14px">'+f.title+'</div>'+
+      '<div class="muted" style="font:400 13px/1.5 system-ui;margin-top:3px">'+f.desc+'</div></div>';
+    fx.appendChild(el);
+  });
+
+  // prove
+  $('provebig').textContent = d.prove.detected + ' of ' + d.prove.total + ' detected';
+  $('provesub').textContent = d.prove.total + ' attacker techniques safely emulated on this machine';
+}
+
+function defaultSources(d){
+  // The /api/score payload doesn't ship raw sources; show a sensible host set.
+  return ['Local system logs','Host firewall','OS security events'];
+}
+
+async function scan(){
+  $('verdict').textContent = 'Scanning this machine…';
+  try{
+    const r = await fetch('/api/score', {cache:'no-store'});
+    const d = await r.json();
+    render(d);
+  }catch(e){
+    $('verdict').textContent = 'Could not reach the scorer. Is the service running?';
+  }
+}
+
+$('rescan').addEventListener('click', scan);
+$('download').addEventListener('click', ()=>window.print());
+scan();
+</script>
+</body>
+</html>
