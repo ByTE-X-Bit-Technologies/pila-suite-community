@@ -114,14 +114,16 @@
     <div id="fixes"></div>
   </section>
 
-  <!-- PROVE -->
+  <!-- COVERAGE -->
   <section class="card" style="border-color:#223042;background:linear-gradient(180deg,#120e1d 0%,var(--panel) 60%)">
     <div class="row"><span class="kicker" style="color:var(--purple)">4 · COVERAGE</span><span class="gk" style="font-weight:600;font-size:15px">Would your defenses catch it?</span></div>
     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:20px;padding:15px 17px;border:1px solid var(--line2);border-radius:11px;background:var(--panel2)">
       <div><div class="gk" id="provebig" style="font-weight:700;font-size:24px;color:var(--purple)">—</div><div class="muted" id="provesub" style="font:500 12px/1 system-ui;margin-top:5px">—</div></div>
       <div style="width:1px;align-self:stretch;background:var(--line2)"></div>
-      <div class="muted" style="font:400 12px/1.5 system-ui;max-width:280px">Each technique you can't see becomes a ranked fix above. <span class="dim">Professional proves each one by safely running the attack (live emulation).</span></div>
+      <div class="muted" style="font:400 12px/1.5 system-ui;max-width:300px">Each technique you can't see becomes a ranked fix above. <span class="dim">Professional proves each one by safely running the attack (live emulation).</span></div>
     </div>
+    <div id="covlist" style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:8px"></div>
+    <div class="dim" style="font:400 11px/1.45 system-ui;margin-top:11px">Coverage is <strong style="font-weight:600">estimated</strong> from the detection telemetry present on this machine. Professional runs each technique to confirm it actually fires.</div>
   </section>
 
   <!-- UPGRADE -->
@@ -129,10 +131,10 @@
     <div class="gk" style="font-weight:700;font-size:18px;margin-bottom:6px">This is one machine. You have a network.</div>
     <p class="muted" style="margin:0 0 18px;font:400 13px/1.6 system-ui;max-width:640px">Community scores the computer you're on. Professional runs the real emulation, scores every device, plugs into your SIEM, and keeps watching so the grade stays honest over time.</p>
     <div class="lockgrid">
-      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Scan every device</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">One grade across your whole network.</div></div></div>
-      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Plug in your SIEM</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Suricata, Wazuh, Elastic, Splunk.</div></div></div>
-      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Track your score over time</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Continuous scoring and regression alerts.</div></div></div>
       <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Live attack emulation</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Safely runs the techniques to prove detection fires.</div></div></div>
+      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Plug in your SIEM</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Suricata, Wazuh, Elastic, Splunk.</div></div></div>
+      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Scan every device</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">One detection-coverage grade across your network.</div></div></div>
+      <div class="lockitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><div class="gk" style="font-weight:600;font-size:13px">Track coverage over time</div><div class="muted" style="font:400 12px/1.45 system-ui;margin-top:2px">Continuous scoring and regression alerts.</div></div></div>
     </div>
     <div style="margin-top:18px;display:flex;flex-wrap:wrap;align-items:center;gap:14px">
       <button class="btn">See Professional</button>
@@ -149,7 +151,6 @@ const $ = (id) => document.getElementById(id);
 function catColor(v){ return v>=70?'var(--green)':v>=50?'var(--amber)':'var(--red)'; }
 
 function render(d){
-  // ring
   $('grade').textContent = d.grade;
   $('grade').style.color = d.grade_color;
   $('ring').style.borderColor = d.grade_color;
@@ -158,16 +159,13 @@ function render(d){
   $('scopeline').textContent = 'This machine · ' + (d.meta ? d.meta.edition : 'Community') + ' · detection coverage';
   $('hostline').textContent = d.host_label + ' · scanned just now';
 
-  // sources (from categories? we show the prove + a derived list) — use categories’ visibility via /api
-  // sources come back implicitly via the collector; show present ones we know from prove context:
   const srcWrap = $('sources'); srcWrap.innerHTML='';
-  (d.sources || d._sources || defaultSources(d)).forEach(s=>{
+  (d.sources || defaultSources(d)).forEach(s=>{
     const el=document.createElement('span'); el.className='chip';
     el.innerHTML='<span class="dot" style="background:var(--green)"></span>'+s;
     srcWrap.appendChild(el);
   });
 
-  // categories
   const cats = $('cats'); cats.innerHTML='';
   d.categories.forEach(c=>{
     const wrap=document.createElement('div');
@@ -183,7 +181,6 @@ function render(d){
     cats.appendChild(wrap);
   });
 
-  // fixes
   const fx = $('fixes'); fx.innerHTML='';
   d.fixes.forEach(f=>{
     const el=document.createElement('div'); el.className='fix';
@@ -193,13 +190,29 @@ function render(d){
     fx.appendChild(el);
   });
 
-  // prove
   $('provebig').textContent = d.prove.detected + ' of ' + d.prove.total + ' covered';
   $('provesub').textContent = d.prove.total + ' common ATT&CK techniques checked';
+  (function(){
+    var cov = d.prove.covered || [], mis = d.prove.missed || [];
+    var cl = $('covlist'); if (!cl) return; cl.innerHTML = '';
+    function esc(t){ return String(t==null?'':t).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+    function techrow(name, tid, ok, note){
+      var dot = ok ? '#34d399' : '#f59e0b';
+      var badge = ok ? 'est. covered' : 'blind spot';
+      return '<div style="display:flex;gap:9px;padding:9px 11px;border:1px solid var(--line2);border-radius:9px;background:var(--panel)">'
+        + '<span style="flex:none;width:7px;height:7px;border-radius:50%;background:' + dot + ';margin-top:6px"></span>'
+        + '<div style="min-width:0"><div class="gk" style="font-weight:600;font-size:13px">' + esc(name)
+        + ' <span class="dim" style="font-weight:500;font-size:11px">' + esc(tid) + '</span></div>'
+        + '<div class="muted" style="font:400 11px/1.4 system-ui;margin-top:2px">'
+        + '<span style="color:' + dot + '">' + badge + '</span>'
+        + (note ? ' · ' + esc(note) : '') + '</div></div></div>';
+    }
+    cov.forEach(function(c){ cl.innerHTML += techrow(c.name, c.id, true, c.via ? 'via ' + c.via : ''); });
+    mis.forEach(function(m){ cl.innerHTML += techrow(m.name, m.id, false, m.fix ? 'fix: ' + m.fix : ''); });
+  })();
 }
 
 function defaultSources(d){
-  // The /api/score payload doesn't ship raw sources; show a sensible host set.
   return ['Endpoint detection','Event logging','Audit policy'];
 }
 
