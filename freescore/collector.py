@@ -104,18 +104,37 @@ _VIS_SOURCES = [
 ]
 
 
+# Readable source label for "via <source>" on a covered technique.
+_DETECTOR_LABEL = {
+    "scriptblock": "PowerShell script-block logging",
+    "modulelog": "PowerShell module logging",
+    "cmdline": "command-line auditing",
+    "proc_audit": "process-creation auditing",
+    "sysmon": "Sysmon",
+    "edr": "Endpoint detection (EDR / Defender)",
+    "logon_audit": "logon auditing",
+    "acct_audit": "account-management auditing",
+    "seclog": "Security / audit log",
+}
+
+
 def _coverage(tele: dict) -> ProveResult:
     detected = 0
+    covered: list[dict] = []
     missed: list[dict] = []
     for tid, name, dets in _TECHNIQUES:
-        if any(tele.get(d) is True for d in dets):
+        hit = next((d for d in dets if tele.get(d) is True), None)
+        if hit is not None:
             detected += 1
+            covered.append({"id": tid, "name": name,
+                            "via": _DETECTOR_LABEL.get(hit, hit)})
         else:
             fixkey = next((d for d in dets if tele.get(d) is not True), dets[0])
             missed.append({"id": tid, "name": name, "tactic": "",
                            "fix": _DETECTOR_FIX.get(fixkey, "add detection telemetry")})
     return ProveResult(techniques_total=len(_TECHNIQUES),
-                       techniques_detected=detected, missed=missed)
+                       techniques_detected=detected,
+                       covered=covered, missed=missed)
 
 
 def _signals_from_tele(host: str, tele: dict) -> Signals:

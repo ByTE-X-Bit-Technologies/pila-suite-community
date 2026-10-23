@@ -47,6 +47,7 @@ CATEGORY_TARGETS = {
 class ProveResult:
     techniques_total: int = 0
     techniques_detected: int = 0
+    covered: list[dict] = field(default_factory=list)
     missed: list[dict] = field(default_factory=list)
 
     @property
@@ -371,6 +372,7 @@ def compute(signals: Signals) -> dict:
             "total": signals.prove.techniques_total,
             "detected": signals.prove.techniques_detected,
             "coverage_pct": round(signals.prove.coverage_pct, 1),
+            "covered": signals.prove.covered,
             "missed": signals.prove.missed,
         },
     }
