@@ -45,10 +45,16 @@ CATEGORY_TARGETS = {
 
 @dataclass
 class ProveResult:
+    # techniques_total = JUDGED techniques (covered + confirmed gaps). Techniques
+    # we have no telemetry to judge are held in `unknown` and excluded from the
+    # score, so a blind spot never reads as a failure. core_total = the full
+    # technique set for this edition (judged + unknown) for honest reporting.
     techniques_total: int = 0
     techniques_detected: int = 0
     covered: list[dict] = field(default_factory=list)
     missed: list[dict] = field(default_factory=list)
+    unknown: list[dict] = field(default_factory=list)
+    core_total: int = 0
 
     @property
     def coverage_pct(self) -> float:
@@ -71,6 +77,12 @@ class Signals:
     prove: ProveResult = field(default_factory=ProveResult)
     aesp_effectiveness: Optional[float] = None
     attack_coverage_collected: bool = True
+    response_collected: bool = True
+    # True only when this host's coverage came from a REAL emulation result
+    # (live LMEP proof), not the presence estimate. Drives the honest
+    # "proven" vs "estimated" distinction — a Full key alone does not make
+    # coverage "proven"; an actual emulation engagement does.
+    coverage_proven: bool = False
     host_label: str = "this machine"
     last_seen: Optional[str] = None
     profile: str = "intermittent"
@@ -280,7 +292,12 @@ def _category_collected(cat: str, s: Signals) -> bool:
         return (s.pending_security_updates is not None
                 or s.vuln_severities is not None
                 or bool(s.os_end_of_life))
-    return True  # visibility, response_readiness always measured
+    if cat == "response_readiness":
+        # Without endpoint telemetry (e.g. Wazuh off) we can't confirm EDR,
+        # isolation or an IR playbook — so response readiness is "not assessed",
+        # not a zero. The discovery layer sets this flag.
+        return getattr(s, "response_collected", True)
+    return True  # visibility always measured
 
 
 def compute(signals: Signals) -> dict:
@@ -288,26 +305,29 @@ def compute(signals: Signals) -> dict:
 
     collected = {cat: _category_collected(cat, signals) for cat in CATEGORIES}
     scored_cats = [c for c in CATEGORIES if collected[c]]
-    # The headline grade IS the detection-coverage score - the product's core
-    # promise ("your detection coverage is X%"). Visibility and response
-    # readiness are shown as supporting context but do not drive the grade.
-    if collected.get("attack_coverage"):
-        overall = sub["attack_coverage"]
-    else:
-        other = [c for c in scored_cats if c != "attack_coverage"] or scored_cats
-        weight_sum = sum(CATEGORY_WEIGHTS[c] for c in other) or 1.0
-        overall = sum(sub[c] * CATEGORY_WEIGHTS[c] for c in other) / weight_sum
+    # The headline grade is a WEIGHTED BLEND of every category we actually
+    # measured — detection coverage is the heaviest input (weight 0.30) but no
+    # longer the sole driver, so a perfect detection estimate can't mask failing
+    # response/config/patch posture. Categories we couldn't measure are excluded
+    # and the remaining weights renormalize, so a blind spot never counts as a
+    # zero. Detection coverage still stands on its own as a category and in the
+    # PROVE panel ("your detection coverage is X%").
+    weight_sum = sum(CATEGORY_WEIGHTS[c] for c in scored_cats) or 1.0
+    overall = sum(sub[c] * CATEGORY_WEIGHTS[c] for c in scored_cats) / weight_sum
     overall_i = int(round(overall))
     letter = grade_for(overall)
 
     def _findings(cat):
         s = signals
         if cat == "attack_coverage":
-            out = [f"{s.prove.techniques_detected} of {s.prove.techniques_total} techniques covered"]
+            p = s.prove
+            out = [f"{p.techniques_detected} of {p.techniques_total} judged techniques covered"]
             if s.aesp_effectiveness is not None:
                 out.append(f"AESP effectiveness {int(round(s.aesp_effectiveness))}")
-            if s.prove.missed:
-                out.append("blind spots: " + ", ".join(m.get("name", m.get("id", "?")) for m in s.prove.missed[:3]))
+            if p.missed:
+                out.append("gaps: " + ", ".join(m.get("name", m.get("id", "?")) for m in p.missed[:3]))
+            if p.unknown:
+                out.append(f"{len(p.unknown)} need deeper visibility to judge (not counted)")
             out.append("presence-based estimate - Pro confirms by live emulation")
             return out
         if cat == "visibility":
@@ -374,5 +394,9 @@ def compute(signals: Signals) -> dict:
             "coverage_pct": round(signals.prove.coverage_pct, 1),
             "covered": signals.prove.covered,
             "missed": signals.prove.missed,
+            "unknown": signals.prove.unknown,
+            "unknown_count": len(signals.prove.unknown),
+            "core_total": signals.prove.core_total or (
+                signals.prove.techniques_total + len(signals.prove.unknown)),
         },
     }

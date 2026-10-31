@@ -76,7 +76,7 @@ _TECHNIQUES = [
     ("T1053.005", "Scheduled-task persistence", ["proc_audit", "sysmon", "edr"]),
     ("T1021.002", "Lateral movement (SMB/remote login)", ["logon_audit", "edr"]),
     ("T1136",     "New account creation",       ["acct_audit"]),
-    ("T1070.001", "Clearing the audit log",     ["seclog", "edr"]),
+    ("T1685.005", "Clearing the audit log",     ["seclog", "edr"]),
     ("T1548",     "Privilege escalation",       ["proc_audit", "cmdline", "sysmon", "edr"]),
     ("T1218",     "Trusted-binary proxy exec",  ["proc_audit", "cmdline", "sysmon", "edr"]),
 ]
