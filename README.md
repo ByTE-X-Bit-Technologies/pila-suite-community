@@ -1,24 +1,31 @@
 # PILA Suite - Community Edition
 
-Scan, score, fix, and prove your security posture. The Community edition runs
-Host-scope on the machine it's installed on and produces a real, deterministic
-letter grade from locally collected signals.
+A free, local detection-coverage check for the computer you're on. It works out
+which of 12 common MITRE ATT&CK techniques (across 7 tactics) this machine's own
+telemetry would detect, and gives you a deterministic 0-100 score, a letter
+grade, and the fixes that matter most.
 
 ## What it does
 
-Four steps:
-1. **Scan** - inventory the host's log sources, hardening controls, EDR/firewall state, and patch posture.
-2. **Score** - a weighted 0-100 score across five categories (attack coverage, visibility, response readiness, config hardening, patch posture) with a letter grade.
-3. **Fix** - prioritized, specific remediation steps for what dragged the score down.
-4. **Prove** - a host-safe check of whether the machine's own telemetry would catch a small set of non-destructive MITRE ATT&CK techniques.
+1. **Scan** - reads this machine's detection telemetry, read-only: endpoint
+   detection (EDR / Microsoft Defender), Sysmon, PowerShell logging, and
+   process, logon and account-management auditing. Nothing leaves the machine.
+2. **Score** - a 0-100 score and letter grade from two categories:
+   **Detection coverage** (how many of the 12 techniques a present telemetry
+   source would catch; 60% of the score) and **Visibility / logging** (how many
+   of the expected detection sources are present; 40%).
+3. **Fix** - the highest-impact changes, ranked by how much each would raise
+   the score.
+4. **Coverage** - which of the 12 techniques your telemetry would catch, and
+   which it would miss.
 
 ## Honesty
 
-The Community edition measures what it can see locally. The Prove step runs in
-**sample mode** - detection is *inferred* from the controls the scan actually
-found, never fabricated - and any category it can't measure is shown as
-"not yet collected" and excluded from the score rather than filled with a guess.
-A category never shows a number it didn't truly measure.
+Community estimates detectability from the telemetry that is present - no
+attack is executed. It does not check host hygiene (firewall, disk encryption,
+patches - that is the BXB Posture Scanner) or incident-response readiness, so
+those are not part of the score. Anything it cannot measure is left out rather
+than guessed.
 
 ## Install
 

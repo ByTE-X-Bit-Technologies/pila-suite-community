@@ -3,7 +3,7 @@ PILA Suite — Community (Host) server
 ========================================
 
 Serves the single PILA Suite product: one page (Scan -> Score -> Fix ->
-Prove) plus the JSON endpoints it calls. Host-scope only; Network and Fleet are
+Coverage) plus the JSON endpoints it calls. Host-scope only; Network and Fleet are
 reported as locked and there is no code path that would scan them — the Community
 build genuinely cannot reach beyond this machine.
 

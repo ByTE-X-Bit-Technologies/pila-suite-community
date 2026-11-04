@@ -11,8 +11,9 @@ It does NOT check host hygiene (firewall / disk encryption / patch level) -
 that is the BXB Posture Scanner's job, a separate product. PILA answers
 "would I SEE the attack," not "are my settings safe."
 
-No attack is executed. The real emulation that confirms detection is the Pro
-(LMEP) feature; Community assesses detectability from telemetry present.
+No attack is executed. Live emulation (LMEP), which proves a subset of these
+techniques, is a PILA Suite Full feature; Community assesses detectability
+from the telemetry present.
 
 Platform support:
   * Windows - WORKING (PowerShell, read-only)

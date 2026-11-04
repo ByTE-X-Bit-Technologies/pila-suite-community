@@ -19,7 +19,7 @@ CATEGORIES = {
 }
 
 CATEGORY_METHOD = {
-    "attack_coverage": "Checks whether your detection telemetry would catch common MITRE ATT&CK techniques (Pro emulates them to confirm).",
+    "attack_coverage": "Checks whether your detection telemetry would catch common MITRE ATT&CK techniques (Full proves a subset by live emulation).",
     "visibility": "Checks that the log sources needed to see an attack are present and reporting.",
     "response_readiness": "Looks for the means to contain an incident here: endpoint detection, an isolation path, and an IR playbook.",
     "config_hardening": "Runs host hardening checks (firewall, remote login, automatic updates) and scores the pass rate.",
@@ -328,7 +328,8 @@ def compute(signals: Signals) -> dict:
                 out.append("gaps: " + ", ".join(m.get("name", m.get("id", "?")) for m in p.missed[:3]))
             if p.unknown:
                 out.append(f"{len(p.unknown)} need deeper visibility to judge (not counted)")
-            out.append("presence-based estimate - Pro confirms by live emulation")
+            if not getattr(s, "coverage_proven", False):
+                out.append("presence-based estimate - Full proves a subset by live emulation")
             return out
         if cat == "visibility":
             exp = s.expected_log_sources or []
