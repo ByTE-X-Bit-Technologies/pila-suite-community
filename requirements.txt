@@ -1,2 +1,2 @@
-fastapi>=0.110
-uvicorn>=0.29
+# PILA Suite Community runs on the Python standard library only — no third-party
+# runtime dependencies. Build-time only: pyinstaller (to package the .exe).

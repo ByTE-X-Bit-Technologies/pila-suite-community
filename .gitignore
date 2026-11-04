@@ -23,3 +23,10 @@ demo.conf
 # OS
 .DS_Store
 Thumbs.db
+
+# build artifacts
+.buildvenv/
+dist/
+build/build/
+build/__pycache__/
+build/version_info.generated.txt
