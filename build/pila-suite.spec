@@ -2,9 +2,13 @@
 # Build (run from repo root on Windows):  pyinstaller build/pila-suite.spec
 # Output: dist/pila-suite-<version>.exe  — one file, no third-party runtime deps.
 import os
-import freescore
+import re
 
-VER = freescore.__version__
+# SPECPATH is the spec's own directory (<repo>/build); ROOT is the repo root.
+ROOT = os.path.dirname(SPECPATH)
+_init = os.path.join(ROOT, "freescore", "__init__.py")
+with open(_init, encoding="utf-8") as _fh:
+    VER = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', _fh.read()).group(1)
 _parts = (VER.split("+")[0].split("-")[0].split(".") + ["0", "0", "0", "0"])[:4]
 VTUPLE = tuple(int(x) if x.isdigit() else 0 for x in _parts)
 
@@ -26,26 +30,23 @@ _VERSION_RC = f"""VSVersionInfo(
   ]
 )
 """
-_rc_path = os.path.join('build', 'version_info.generated.txt')
-with open(_rc_path, 'w', encoding='utf-8') as _fh:
+_rc_path = os.path.join(ROOT, "build", "version_info.generated.txt")
+with open(_rc_path, "w", encoding="utf-8") as _fh:
     _fh.write(_VERSION_RC)
 
 a = Analysis(
-    ['build/pila_suite_app.py'],
-    pathex=['.'],
+    [os.path.join(ROOT, "build", "pila_suite_app.py")],
+    pathex=[ROOT],
     binaries=[],
-    datas=[('freescore/templates/index.html', 'freescore/templates')],
-    hiddenimports=[],
-    hookspath=[], hooksconfig={}, runtime_hooks=[], excludes=[],
+    datas=[(os.path.join(ROOT, "freescore", "templates", "index.html"), "freescore/templates")],
+    hiddenimports=[], hookspath=[], hooksconfig={}, runtime_hooks=[], excludes=[],
     noarchive=False,
 )
 pyz = PYZ(a.pure)
 exe = EXE(
     pyz, a.scripts, a.binaries, a.datas, [],
-    name=f'pila-suite-{VER}',
+    name=f"pila-suite-{VER}",
     debug=False, bootloader_ignore_signals=False, strip=False,
-    upx=False,                 # no UPX: avoids AV false positives on a security tool
-    runtime_tmpdir=None,
-    console=True,              # shows "Serving on ..."; closing the window stops it
+    upx=False, runtime_tmpdir=None, console=True,
     version=_rc_path,
 )
