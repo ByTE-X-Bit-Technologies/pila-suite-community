@@ -146,12 +146,13 @@ def _signals_from_tele(host: str, tele: dict) -> Signals:
         present_log_sources=present,
         hardening_checks=[],              # hygiene is the Scanner's job -> dropped
         has_edr=bool(tele.get("edr")),
-        has_isolation_path=False,         # containment not assessed in Free
+        has_isolation_path=False,         # containment/response not assessed in Community -> dropped
         has_ir_playbook=False,
         pending_security_updates=None,    # patch posture is the Scanner's job -> dropped
         os_end_of_life=False,
         prove=_coverage(tele),
         attack_coverage_collected=True,   # we DID assess detection coverage
+        response_collected=False,         # response readiness not assessed in Community -> dropped
     )
 
 
