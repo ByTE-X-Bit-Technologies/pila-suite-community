@@ -1,5 +1,5 @@
 """
-BXB Security Score - Host scoring engine (Free / Community edition)
+PILA Suite - Host scoring engine (Community edition)
 """
 
 from __future__ import annotations
@@ -283,7 +283,7 @@ def _verdict(score: float, sub: dict, host_label: str, scored_cats) -> str:
 def _category_collected(cat: str, s: Signals) -> bool:
     """Whether this category was actually measured on this host. Uncollected
     categories are dropped from the score and omitted from the UI, so the grade
-    reflects only what the edition measures (Free measures detection, not hygiene)."""
+    reflects only what the edition measures (Community measures detection, not hygiene)."""
     if cat == "attack_coverage":
         return getattr(s, "attack_coverage_collected", True)
     if cat == "config_hardening":
@@ -368,7 +368,7 @@ def compute(signals: Signals) -> dict:
     categories = []
     for cat in CATEGORIES:
         if not collected[cat]:
-            continue  # omit uncollected categories entirely (e.g. hygiene in Free)
+            continue  # omit uncollected categories entirely (e.g. hygiene in Community)
         v = int(round(sub[cat]))
         categories.append({
             "key": cat,

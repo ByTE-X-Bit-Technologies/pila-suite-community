@@ -1,5 +1,5 @@
 """
-PILA Suite - engine hooks (Free / Community edition).
+PILA Suite - engine hooks (Community edition).
 
 In the detection-coverage model the collector already produces the coverage
 result (the "Test"), so enrich() is a pass-through. A licensed build swaps this
@@ -10,5 +10,5 @@ from .scoring import Signals
 
 
 def enrich(signals: Signals) -> Signals:
-    # Collector owns the coverage assessment; nothing to add in the Free build.
+    # Collector owns the coverage assessment; nothing to add in the Community build.
     return signals

@@ -1,5 +1,5 @@
 """
-PILA Suite - Host detection-coverage collector (Free / Community edition)
+PILA Suite - Host detection-coverage collector (Community edition)
 =========================================================================
 
 This is the "Scan" step. It inventories the host's DETECTION telemetry
@@ -12,7 +12,7 @@ that is the BXB Posture Scanner's job, a separate product. PILA answers
 "would I SEE the attack," not "are my settings safe."
 
 No attack is executed. The real emulation that confirms detection is the Pro
-(LMEP) feature; Free assesses detectability from telemetry present.
+(LMEP) feature; Community assesses detectability from telemetry present.
 
 Platform support:
   * Windows - WORKING (PowerShell, read-only)

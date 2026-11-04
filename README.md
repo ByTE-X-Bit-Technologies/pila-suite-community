@@ -1,4 +1,4 @@
-# BXB Security Score - Community Edition
+# PILA Suite - Community Edition
 
 Scan, score, fix, and prove your security posture. The Community edition runs
 Host-scope on the machine it's installed on and produces a real, deterministic
@@ -32,7 +32,7 @@ Open http://127.0.0.1:8090.
 
 Community is **Host scope** - the local machine only. Network- and Fleet-scope
 scanning, continuous monitoring, trend history, and live attack-emulation are
-part of the Professional edition.
+part of PILA Suite's paid editions (Essentials, Full, Enterprise).
 
 ## License
 
