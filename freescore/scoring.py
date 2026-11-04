@@ -78,6 +78,12 @@ class Signals:
     aesp_effectiveness: Optional[float] = None
     attack_coverage_collected: bool = True
     response_collected: bool = True
+    # Response readiness is scored only on the sub-signals that can actually be
+    # assessed: endpoint detection always; the isolation path only when its
+    # configuration can be checked; the IR playbook only when the tier produces
+    # IRV evidence. Defaults keep every sub-signal assessed (previous behaviour).
+    isolation_assessable: bool = True
+    ir_playbook_assessable: bool = True
     # True only when this host's coverage came from a REAL emulation result
     # (live LMEP proof), not the presence estimate. Drives the honest
     # "proven" vs "estimated" distinction — a Full key alone does not make
@@ -108,9 +114,33 @@ def score_visibility(s: Signals) -> float:
     return _clamp(100.0 * got / len(expected))
 
 
+def _response_signals(s: Signals):
+    """(key, label, assessed, present) for each response-readiness sub-signal."""
+    return [
+        ("edr", "Endpoint detection", True, bool(s.has_edr)),
+        ("isolation", "Isolation path", bool(getattr(s, "isolation_assessable", True)), bool(s.has_isolation_path)),
+        ("ir_playbook", "IR playbook", bool(getattr(s, "ir_playbook_assessable", True)), bool(s.has_ir_playbook)),
+    ]
+
+
 def score_response_readiness(s: Signals) -> float:
-    pillars = [s.has_edr, s.has_isolation_path, s.has_ir_playbook]
-    return _clamp(100.0 * sum(1 for p in pillars if p) / len(pillars))
+    # Mean of the sub-signals that can be assessed; one that cannot be checked
+    # is left out rather than counted as missing. EDR is always assessed.
+    assessed = [present for _, _, ok, present in _response_signals(s) if ok]
+    return _clamp(100.0 * sum(1 for p in assessed if p) / len(assessed))
+
+
+def response_readiness_strict(s: Signals) -> float:
+    """All three sub-signals, with any that could not be assessed counted as not
+    evidenced. For audit-facing mappings (CIS / Essential Eight), not the grade."""
+    return _clamp(100.0 * sum(1 for _, _, ok, p in _response_signals(s) if ok and p) / 3)
+
+
+def _response_evidenced(s: Signals) -> bool:
+    """Response readiness is graded only when more than EDR can be assessed: an
+    isolation path that can be verified, or IRV evidence. EDR alone is not enough
+    to grade it."""
+    return any(ok for k, _, ok, _ in _response_signals(s) if k != "edr")
 
 
 def score_config_hardening(s: Signals) -> float:
@@ -214,10 +244,29 @@ def _impact_of_lifting(sub: dict, cat: str) -> float:
     return (target - current) * CATEGORY_WEIGHTS[cat]
 
 
+_RESPONSE_FIX = {
+    "edr": ("Turn on endpoint detection",
+            "No endpoint detection was confirmed on this host. Deploy EDR (or the Wazuh agent) "
+            "so an incident can be seen and contained, then re-scan."),
+    "isolation": _CATEGORY_FIX["response_readiness"],
+    "ir_playbook": ("Validate a remediation with IRV",
+                    "No validated incident-response playbook is on record for this host. Run an IRV "
+                    "validation after your next remediation so it counts, then re-scan."),
+}
+
+
+def _response_fix(s: Signals):
+    """Fix text for the first assessed response sub-signal that is missing."""
+    for k, _, ok, present in _response_signals(s):
+        if ok and not present:
+            return _RESPONSE_FIX[k]
+    return _CATEGORY_FIX["response_readiness"]
+
+
 def build_fixes(signals: Signals, sub: dict, scored_cats, limit: int = 3) -> list[dict]:
     candidates: list[tuple[float, dict]] = []
 
-    for c in signals.hardening_checks or []:
+    for c in (signals.hardening_checks or []) if "config_hardening" in scored_cats else []:
         if not c.get("passed"):
             gain = _impact_of_lifting(sub, "config_hardening")
             action = c.get("fix") or ("Harden: " + c.get("label", "a setting"))
@@ -247,6 +296,8 @@ def build_fixes(signals: Signals, sub: dict, scored_cats, limit: int = 3) -> lis
         if gain <= 0:
             continue
         title, desc = _CATEGORY_FIX[cat]
+        if cat == "response_readiness":
+            title, desc = _response_fix(signals)
         if cat == "attack_coverage":
             p = signals.prove
             if p.techniques_total:
@@ -300,11 +351,21 @@ def _category_collected(cat: str, s: Signals) -> bool:
     return True  # visibility always measured
 
 
-def compute(signals: Signals) -> dict:
+def compute(signals: Signals, graded=None) -> dict:
+    """Score one host. `graded` (an iterable of category keys) limits which
+    measured categories count toward the grade, verdict and ranked fixes; the
+    others are still measured and returned (flagged graded=False) for reports
+    such as the compliance mapping. None (the default) grades every measured
+    category, which is the Community behaviour."""
     sub = {cat: round(_SCORERS[cat](signals), 1) for cat in CATEGORIES}
 
     collected = {cat: _category_collected(cat, signals) for cat in CATEGORIES}
     scored_cats = [c for c in CATEGORIES if collected[c]]
+    graded_set = set(CATEGORIES) if graded is None else set(graded)
+    graded_cats = [c for c in scored_cats if c in graded_set]
+    if "response_readiness" in graded_cats and not _response_evidenced(signals):
+        graded_cats.remove("response_readiness")   # only EDR assessable: measured, not graded
+    graded_cats = graded_cats or scored_cats
     # The headline grade is a WEIGHTED BLEND of every category we actually
     # measured — detection coverage is the heaviest input (weight 0.30) but no
     # longer the sole driver, so a perfect detection estimate can't mask failing
@@ -312,8 +373,8 @@ def compute(signals: Signals) -> dict:
     # and the remaining weights renormalize, so a blind spot never counts as a
     # zero. Detection coverage still stands on its own as a category and in the
     # PROVE panel ("your detection coverage is X%").
-    weight_sum = sum(CATEGORY_WEIGHTS[c] for c in scored_cats) or 1.0
-    overall = sum(sub[c] * CATEGORY_WEIGHTS[c] for c in scored_cats) / weight_sum
+    weight_sum = sum(CATEGORY_WEIGHTS[c] for c in graded_cats) or 1.0
+    overall = sum(sub[c] * CATEGORY_WEIGHTS[c] for c in graded_cats) / weight_sum
     overall_i = int(round(overall))
     letter = grade_for(overall)
 
@@ -343,11 +404,13 @@ def compute(signals: Signals) -> dict:
                 out.append("missing: " + ", ".join(missing))
             return out
         if cat == "response_readiness":
-            return [
-                "EDR present" if s.has_edr else "no EDR",
-                "isolation path" if s.has_isolation_path else "no isolation path",
-                "IR playbook" if s.has_ir_playbook else "no IR playbook",
-            ]
+            txt = {"edr": ("EDR present", "no EDR"),
+                   "isolation": ("isolation path", "no isolation path"),
+                   "ir_playbook": ("IR playbook", "no IR playbook")}
+            na = {"isolation": "isolation path not assessed (config not checkable here)",
+                  "ir_playbook": "IR playbook not assessed (needs IRV)"}
+            return [(txt[k][0] if p else txt[k][1]) if ok else na[k]
+                    for k, _, ok, p in _response_signals(s)]
         if cat == "config_hardening":
             checks = s.hardening_checks or []
             if not checks:
@@ -371,7 +434,7 @@ def compute(signals: Signals) -> dict:
         if not collected[cat]:
             continue  # omit uncollected categories entirely (e.g. hygiene in Community)
         v = int(round(sub[cat]))
-        categories.append({
+        item = {
             "key": cat,
             "label": CATEGORIES[cat],
             "value": v,
@@ -379,16 +442,23 @@ def compute(signals: Signals) -> dict:
             "color": ("#34d399" if v >= 70 else "#f59e0b" if v >= 50 else "#f87171"),
             "method": CATEGORY_METHOD[cat],
             "findings": _findings(cat),
-        })
+        }
+        if graded is not None:
+            item["graded"] = cat in graded_cats
+        if cat == "response_readiness":
+            item["signals"] = [{"key": k, "label": lbl, "assessed": ok, "present": (p if ok else None)}
+                               for k, lbl, ok, p in _response_signals(signals)]
+            item["value_strict"] = int(round(response_readiness_strict(signals)))
+        categories.append(item)
 
     return {
         "score": overall_i,
         "grade": letter,
         "grade_color": color_for_grade(letter),
-        "verdict": _verdict(overall, sub, signals.host_label, scored_cats),
+        "verdict": _verdict(overall, sub, signals.host_label, graded_cats),
         "host_label": signals.host_label,
         "categories": categories,
-        "fixes": build_fixes(signals, sub, scored_cats),
+        "fixes": build_fixes(signals, sub, graded_cats),
         "prove": {
             "total": signals.prove.techniques_total,
             "detected": signals.prove.techniques_detected,
